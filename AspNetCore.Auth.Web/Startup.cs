@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AspNetCore.Auth.Web.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace AspNetCore.Auth.Web
 {
@@ -24,7 +26,8 @@ namespace AspNetCore.Auth.Web
                 // ensure that the application should use HTTPS
                 options.Filters.Add(new RequireHttpsAttribute());
             });
-
+            var users = new Dictionary<string, string> { { "Rahul", "Password" }, { "Chris", "Password" } };
+            services.AddSingleton<IUserService>(new DummyUserService(users));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
