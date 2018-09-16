@@ -1,4 +1,5 @@
 ﻿using AspNetCore.Auth.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,20 @@ namespace AspNetCore.Auth.Web
             });
             var users = new Dictionary<string, string> { { "Rahul", "Password" }, { "Chris", "Password" } };
             services.AddSingleton<IUserService>(new DummyUserService(users));
+            services.AddAuthentication(options =>
+            {
+                // specify that for authentication we need to use cookie
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                // by default after the authentication we will authenticate the user using cookie
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                // if the user ever need to authenticate it will ask for the cookie to do it
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/auth/signin";
+                    options.Cookie.Name = "IdentityServer";
+                });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -48,7 +63,7 @@ namespace AspNetCore.Auth.Web
             // Rewrite rule for redirect the user to https if anyone request for http
             app.UseRewriter(new RewriteOptions().AddRedirectToHttps(301, 44341));
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

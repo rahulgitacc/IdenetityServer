@@ -13,6 +13,14 @@ namespace AspNetCore.Auth.Web.Services
                 _users.Add(user.Key.ToLower(), (BCrypt.Net.BCrypt.HashPassword(user.Value), new User(user.Key)));
             }
         }
+
+        /// <summary>
+        /// Validate user credentials 
+        /// </summary>
+        /// <param name="username">username</param>
+        /// <param name="password">password</param>
+        /// <param name="user">user</param>
+        /// <returns>bool</returns>
         public Task<bool> ValidateCredentials(string username, string password, out User user)
         {
             user = null;
