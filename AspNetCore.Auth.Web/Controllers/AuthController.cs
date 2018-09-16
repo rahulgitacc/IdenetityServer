@@ -45,6 +45,38 @@ namespace AspNetCore.Auth.Web.Controllers
             return View(model);
         }
 
+        [Route("signout")]
+        [HttpPost]
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Route("signup")]
+        public IActionResult SignUp()
+        {
+            return View(new SignUpModel());
+        }
+
+        [Route("signup")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SignUp(SignUpModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (await _userService.AddUser(model.Username, model.Password))
+                {
+                    await SigninUser(model.Username);
+                    return RedirectToAction("Index", "Home");
+                }
+                ModelState.AddModelError("Error", "Could not add user. Username is already in use....");
+            }
+            return View(model);
+        }
+
+        //TODO: move to separate area/project
         /// <summary>
         /// To sign-in the user using cookie authentication
         /// </summary>
@@ -67,14 +99,6 @@ namespace AspNetCore.Auth.Web.Controllers
             var principle = new ClaimsPrincipal(identity);
             // initiate sign-in using the principle
             await HttpContext.SignInAsync(principle);
-        }
-
-        [Route("signout")]
-        [HttpPost]
-        public async Task<IActionResult> SignOut()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
         }
     }
 }

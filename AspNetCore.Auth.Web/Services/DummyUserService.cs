@@ -15,6 +15,22 @@ namespace AspNetCore.Auth.Web.Services
         }
 
         /// <summary>
+        /// Add new user
+        /// </summary>
+        /// <param name="username">username</param>
+        /// <param name="passsword">passsword</param>
+        /// <returns>bool</returns>
+        public Task<bool> AddUser(string username, string passsword)
+        {
+            if (_users.ContainsKey(username.ToLower()))
+            {
+                return Task.FromResult(false);
+            }
+            _users.Add(username.ToLower(), (BCrypt.Net.BCrypt.HashPassword(passsword), new User(username)));
+            return Task.FromResult(true);
+        }
+
+        /// <summary>
         /// Validate user credentials 
         /// </summary>
         /// <param name="username">username</param>

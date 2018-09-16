@@ -9,6 +9,14 @@
         <h1>Hello World!</h1>
     }
     <p class="lead">Crass just hate, Dapibus ac facilisis in, Egestas eget quam. Fusce Dapibus, Tellus ac cursus mode, tortors condimentum nibh, UT fermenta fair mass sit amet risus.</p>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <p>
+            <a class="btn btn-lg btn-success" asp-controller="Auth" asp-action="SignUp">
+                Sign Up
+            </a>
+        </p>
+    }
 </div>
 <div class="row marketing">
     <div class="col-lg-6">
