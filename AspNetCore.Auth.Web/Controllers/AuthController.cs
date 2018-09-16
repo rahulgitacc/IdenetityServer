@@ -27,7 +27,7 @@ namespace AspNetCore.Auth.Web.Controllers
         [Route("signin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignIn(SignInModel model)
+        public async Task<IActionResult> SignIn(SignInModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -35,6 +35,10 @@ namespace AspNetCore.Auth.Web.Controllers
                 if (await _userService.ValidateCredentials(model.UserName, model.Password, out user))
                 {
                     await SigninUser(user.UserName);
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -63,6 +67,14 @@ namespace AspNetCore.Auth.Web.Controllers
             var principle = new ClaimsPrincipal(identity);
             // initiate sign-in using the principle
             await HttpContext.SignInAsync(principle);
+        }
+
+        [Route("signout")]
+        [HttpPost]
+        public async Task<IActionResult> SignOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
     }
 }
