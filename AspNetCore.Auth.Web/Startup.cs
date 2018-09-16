@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Rewrite;
@@ -25,6 +27,22 @@ namespace AspNetCore.Auth.Web
                 options.Filters.Add(new RequireHttpsAttribute());
             });
 
+            services.AddAuthentication(options =>
+            {
+                // configure for user facebook default scheme
+                options.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
+                // Use cookie authentication for signin scheme
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                // use default cookie scheme for authenticating user on incoming request 
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                .AddFacebook(options =>
+                {
+                    options.AppId = "2217106505202420";
+                    options.AppSecret = "af1ba92fc92e57b0e1d128b93cbe2994";
+
+                })
+                .AddCookie();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -45,7 +63,7 @@ namespace AspNetCore.Auth.Web
             // Rewrite rule for redirect the user to https if anyone request for http
             app.UseRewriter(new RewriteOptions().AddRedirectToHttps(301, 44341));
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
