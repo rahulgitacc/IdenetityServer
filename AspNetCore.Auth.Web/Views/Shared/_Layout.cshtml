@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Identity</title>
+    <title>@ViewData["Title"] Identity Azure AD</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -25,14 +25,14 @@
                     {
                         <li role="presentation"><a href="/userinformation">User Information</a></li>
                         <li role="presentation" class="active">
-                            <form method="post">
+                            <form method="post" asp-controller="Auth" asp-action="SignOut">
                                 <button type="submit" class="btn btn-primary">Sign Out</button>
                             </form>
                         </li>
                     }
                     else
                     {
-                        <li role="presentation" class="active"><a href="#">Sign In</a></li>
+                        <li role="presentation" class="active"><a asp-controller="Auth" asp-action="SignIn">Sign In</a></li>
                     }
                 </ul>
             </nav>
